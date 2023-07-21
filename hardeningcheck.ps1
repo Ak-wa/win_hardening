@@ -88,6 +88,7 @@ try {
 		Write-Host "    PoC via Windows settings > Security & Update > Device Security > Core Isolation > Details`n" -ForegroundColor Magenta
     }
 } catch {
+	$coreIsolationStatus = "[!] Core Isolation / Memory Integrity is disabled."
     Write-Host $coreIsolationStatus -ForegroundColor DarkCyan
     Write-Host "    PoC via Windows settings > Security & Update > Device Security > Core Isolation > Details`n" -ForegroundColor Magenta
 }
@@ -95,7 +96,7 @@ try {
 # Checking if guest account enabled
 if (Get-WmiObject -Class Win32_UserAccount -Filter "Name='Guest'") {
 	Write-Host "[!] Windows user 'Guest' is enabled" -Foregroundcolor DarkCyan
-	Write-Host "	PoC via net user Guest`n" -Foregroundcolor Magenta
+	Write-Host "	PoC via 'net user Guest'`n" -Foregroundcolor Magenta
 } else {
 	Write-Host "[-] Windows user 'Guest' is disabled`n" -Foregroundcolor DarkGray
 }
