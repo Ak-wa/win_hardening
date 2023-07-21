@@ -88,9 +88,15 @@ try {
 		Write-Host "    PoC via Windows settings > Security & Update > Device Security > Core Isolation > Details`n" -ForegroundColor Magenta
     }
 } catch {
-    Write-Host "[+] Core Isolation Status: Error: $_" -ForegroundColor Yellow
-    Write-Host
+    Write-Host $coreIsolationStatus -ForegroundColor DarkCyan
+    Write-Host "    PoC via Windows settings > Security & Update > Device Security > Core Isolation > Details`n" -ForegroundColor Magenta
 }
+
+# Checking if guest account enabled
+if (Get-WmiObject -Class Win32_UserAccount -Filter "Name='Guest'") {
+	Write-Host "[!] Windows user 'Guest' enabled" -Foregroundcolor DarkCyan
+	Write-Host "	PoC via net user Guest`n" -Foregroundcolor Magenta
+	}
 
 # Checking for users which passwords never expire
 $localUsers = Get-WmiObject Win32_UserAccount | Where-Object { $_.LocalAccount -eq $true }
