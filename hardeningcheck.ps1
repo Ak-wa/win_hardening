@@ -94,10 +94,12 @@ try {
 
 # Checking if guest account enabled
 if (Get-WmiObject -Class Win32_UserAccount -Filter "Name='Guest'") {
-	Write-Host "[!] Windows user 'Guest' enabled" -Foregroundcolor DarkCyan
+	Write-Host "[!] Windows user 'Guest' is enabled" -Foregroundcolor DarkCyan
 	Write-Host "	PoC via net user Guest`n" -Foregroundcolor Magenta
-	}
-
+} else {
+	Write-Host "[-] Windows user 'Guest' is disabled`n" -Foregroundcolor DarkGray
+}
+	
 # Checking for users which passwords never expire
 $localUsers = Get-WmiObject Win32_UserAccount | Where-Object { $_.LocalAccount -eq $true }
 foreach ($userAccount in $localUsers) {
