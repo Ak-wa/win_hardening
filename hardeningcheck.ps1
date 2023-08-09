@@ -1,6 +1,11 @@
 # HIGH RISK VULNS ________________________________________________________________________________________________________________________________
 Write-Host "[-                 High risk vulnerabilities                  -]" -Foregroundcolor White -Backgroundcolor DarkGray
 Write-Host "`n"
+
+# MEDIUM RISK VULNS ________________________________________________________________________________________________________________________________
+Write-Host "[-                 Medium risk vulnerabilities                -]" -Foregroundcolor White -Backgroundcolor DarkGray
+Write-Host "`n"
+
 # Checking AppLocker policy
 if ((Get-AppLockerPolicy -Effective).RuleCollections.Count -eq 0) {
 	Write-Host "[!] AppLocker policy not defined!" -Foregroundcolor Red
@@ -8,10 +13,6 @@ if ((Get-AppLockerPolicy -Effective).RuleCollections.Count -eq 0) {
 } else {
 	Write-Host "[+] AppLocker policy is defined" -Foregroundcolor Green
 }
-
-# MEDIUM RISK VULNS ________________________________________________________________________________________________________________________________
-Write-Host "[-                 Medium risk vulnerabilities                -]" -Foregroundcolor White -Backgroundcolor DarkGray
-Write-Host "`n"
 
 # Checking PowerShell language mode / Script execution policy
 $currentpolicy = Get-ExecutionPolicy
