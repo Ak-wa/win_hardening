@@ -1,18 +1,7 @@
-$gpos = Get-NetGPO
-
-foreach ($gpo in $gpos) {
-    $gpoName = $gpo.DisplayName
-    $dc = Get-NetDomainController | Select-Object -First 1  # Choose a domain controller
-
-    $scriptBlock = {
-        param ($gpoName)
-
-        $wsusSettings = Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "WUServer" -ErrorAction SilentlyContinue
-
-        if ($wsusSettings -and $wsusSettings.WUServer -match "http://") {
-            Write-Host "GPO '$gpoName' contains HTTP WSUS server setting."
-        }
+Get-GPO -All | ForEach-Object {
+    $gpo = $_
+    $wsusSettings = Get-GPRegistryValue -Name $gpo.DisplayName -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Value "WUServer" -ErrorAction SilentlyContinue
+    if ($wsusSettings -ne $null -and $wsusSettings.RegistryValueData -match "http://") {
+        Write-Host "GPO $($gpo.DisplayName) contains HTTP WSUS server setting."
     }
-
-    Invoke-Command -ComputerName $dc.Name -ScriptBlock $scriptBlock -ArgumentList $gpoName
 }
