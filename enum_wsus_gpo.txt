@@ -1,0 +1,22 @@
+
+powershell
+Copy code
+Import-Module .\PowerSploit\Recon\PowerView.ps1
+Enumerate GPO Information:
+PowerView allows you to gather information about Group Policy Objects. Run the following command to retrieve GPOs with their display names and distinguished names:
+
+powershell
+Copy code
+Get-NetGPO | Select-Object DisplayName, DistinguishedName
+Check GPO Settings with WSUS:
+PowerView provides commands to query specific GPO settings. Since WSUS settings are usually stored in the registry, you can use the following command to retrieve GPOs where the WSUS server is configured with "http":
+
+powershell
+Copy code
+Get-NetGPO | ForEach-Object {
+    $gpo = $_
+    $wsusSettings = Get-NetGPORegistryValue -GPOName $gpo.DisplayName -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Value "WUServer" -ErrorAction SilentlyContinue
+    if ($wsusSettings -ne $null -and $wsusSettings.Data -match "http://") {
+        Write-Host "GPO $($gpo.DisplayName) contains HTTP WSUS server setting."
+    }
+}
