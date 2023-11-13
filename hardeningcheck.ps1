@@ -159,6 +159,22 @@ Write-Host "[# Environment variables " -Foregroundcolor Green -Backgroundcolor B
 Get-ChildItem Env: | ft Key,Value
 Write-Host "[# Searching for passwords " -Foregroundcolor Green -Backgroundcolor Black
 cd "C:\"
-findstr /SI /M "password=" *.txt
-findstr /si password *.txt *.config *.cnf 2>nul
-findstr /spin "password=" *.*
+Get-ChildItem -Recurse -File | Where-Object {
+    $_.Name -notmatch 'hardening|pentest'
+} | ForEach-Object {
+    $filePath = $_.FullName
+    $content = Get-Content $filePath | Select-String "password=" -Context 0, 1
+    if ($content) {
+        $content | ForEach-Object {
+            $line = $_.Line
+            if ($line.Length -gt 500) {
+                $line = $line.Substring(0, 500)
+            }
+            Write-Host "$filePath" -ForegroundColor Yellow
+            Write-Host "$line" -ForegroundColor Red
+        }
+    }
+}
+#cmd.exe /c 'findstr /SI /M "password=" *.txt 2>nul'
+#cmd.exe /c 'findstr /si password *.txt *.config *.cnf 2>nul'
+#cmd.exe /c 'findstr /spin "password=" *.* 2>nul'
