@@ -1,3 +1,24 @@
+# _______________________________________________________________________________________________________________________________
+Write-Host "### - - - - - - - - - - - - - - - - Redacted Hardening Check - - - - - - - - - - - - - - - - ### " -Foregroundcolor Green -Backgroundcolor Black
+$hostname = $(hostname)
+$ips = Get-NetIPAddress -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
+$currentuser = $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
+$osInfo = Get-CimInstance Win32_OperatingSystem
+$processorInfo = Get-CimInstance Win32_Processor
+$memoryInfo = Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum
+
+
+Write-Host "| Hostname		" -Foregroundcolor Green -Backgroundcolor Black $hostname
+Write-Host "| User			" -Foregroundcolor Green -Backgroundcolor Black $currentuser
+Write-Host "| Operating System: 	$($osInfo.Caption) $($osInfo.Version)" -Foregroundcolor Green -Backgroundcolor Black
+Write-Host "| Processor: 		$($processorInfo.Name)" -Foregroundcolor Green -Backgroundcolor Black
+Write-Host "| Memory: 		$($memoryInfo.Sum / 1GB) GB" -Foregroundcolor Green -Backgroundcolor Black
+
+foreach ($ip in $ips) {Write-Host "| IPv4			" -Foregroundcolor Green -Backgroundcolor Black $ip}
+
+Write-Host "### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ### " -Foregroundcolor Green -Backgroundcolor Black
+
+
 # HIGH RISK VULNS ________________________________________________________________________________________________________________________________
 Write-Host "[-                 High risk vulnerabilities                  -]" -Foregroundcolor White -Backgroundcolor DarkGray
 Write-Host "`n"
@@ -119,3 +140,25 @@ switch ($bitLockerStatus) {
 # Krbtgt domain account long time no passwd
 # ADD WSUS HTTP CHECK
 # ADD LSA (RunasPPL) 
+
+
+Write-Host "[-                 General Enumeration                -]" -Foregroundcolor Green -Backgroundcolor Black
+Write-Host "[# Systeminfo" -Foregroundcolor Green -Backgroundcolor Black
+systeminfo | findstr "Hostname systemname version model typ" 
+# systeminfo | findstr systemname
+# systeminfo | findstr version
+# systeminfo | findstr model
+# systeminfo | findstr typ
+Write-Host "[# Privileges?" -Foregroundcolor Green -Backgroundcolor Black
+whoami /priv
+Write-Host "[# Active Anti-Virus" -Foregroundcolor Green -Backgroundcolor Black
+WMIC /Node:localhost /Namespace:\\root\SecurityCenter2 Path AntivirusProduct Get displayName
+Write-Host "[# Local users" -Foregroundcolor Green -Backgroundcolor Black
+net users
+Write-Host "[# Environment variables " -Foregroundcolor Green -Backgroundcolor Black
+Get-ChildItem Env: | ft Key,Value
+Write-Host "[# Searching for passwords " -Foregroundcolor Green -Backgroundcolor Black
+cd "C:\"
+findstr /SI /M "password=" *.txt
+findstr /si password *.txt *.config *.cnf 2>nul
+findstr /spin "password=" *.*
